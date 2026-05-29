@@ -47,7 +47,7 @@ jobs:
         run: cp target/hola-mundo-api-1.0.0.jar hola-mundo-api-1.0.0.jar
 
       - name: Construir imagen Docker
-        run: docker build -t hola-mundo-api:latest .
+        run: docker build -t hola-mundo-joseph-api:latest .
 
       - name: Copiar artefactos al VPS
         uses: appleboy/scp-action@v0.1.7
@@ -67,12 +67,12 @@ jobs:
         run: |
           if [ "${{ github.ref_name }}" == "qa" ]; then
             echo "PROFILE=qa" >> $GITHUB_ENV
-            echo "PORT=8083" >> $GITHUB_ENV
-            echo "CONTAINER=hola-mundo-api-qa" >> $GITHUB_ENV
+            echo "PORT=7073" >> $GITHUB_ENV
+            echo "CONTAINER=hola-mundo-api-joseph-qa" >> $GITHUB_ENV
           else
             echo "PROFILE=prd" >> $GITHUB_ENV
-            echo "PORT=8081" >> $GITHUB_ENV
-            echo "CONTAINER=hola-mundo-api-prd" >> $GITHUB_ENV
+            echo "PORT=6073" >> $GITHUB_ENV
+            echo "CONTAINER=hola-mundo-api-joseph-prd" >> $GITHUB_ENV
           fi
 
       - name: Desplegar contenedor en VPS
@@ -84,7 +84,7 @@ jobs:
           envs: PROFILE,PORT,CONTAINER
           script: |
             cd /home/app/hola-mundo-api
-            docker build -t hola-mundo-api-$PROFILE:latest .
+            docker build -t hola-mundo-api-joseph-$PROFILE:latest .
             docker stop $CONTAINER || true
             docker rm $CONTAINER || true
             docker run -d \
@@ -92,5 +92,5 @@ jobs:
               --restart unless-stopped \
               -p $PORT:8080 \
               -e SPRING_PROFILES_ACTIVE=$PROFILE \
-              hola-mundo-api-$PROFILE:latest
+              hola-mundo-api-joseph-$PROFILE:latest
             docker image prune -f
